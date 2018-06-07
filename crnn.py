@@ -6,8 +6,9 @@ import glob
 import time
 import os
 import pandas as pd
+import shutil
+import librosa
 
-import keras
 from keras import backend as K
 from keras import optimizers,losses
 from keras.models import Sequential,Model, load_model
@@ -16,13 +17,15 @@ from keras.layers.core import Dense, Dropout, Activation, Flatten, Reshape, Perm
 from keras.layers.convolutional import ZeroPadding2D, AveragePooling2D, Conv2D,MaxPooling2D, Convolution1D,MaxPooling1D
 from keras.layers.pooling import GlobalMaxPooling2D
 from keras.layers import Merge, Input, merge
-from keras.callbacks import ModelCheckpoint, ReduceLROnPlateau, LearningRateScheduler
+from keras.callbacks import TensorBoard,EarlyStopping, ModelCheckpoint, ReduceLROnPlateau, LearningRateScheduler
 from keras.layers import LSTM, SimpleRNN, GRU, TimeDistributed, Bidirectional
 from keras.layers.normalization import BatchNormalization
 import h5py
 from keras.layers.merge import Multiply
 from sklearn import preprocessing
 import random
+
+from sklearn.cross_validation import StratifiedKFold
 
 np.random.seed(1001)
 
