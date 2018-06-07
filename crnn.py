@@ -237,7 +237,7 @@ def get_conv_rnn_model(config):
     a1 = Conv2D(256, (3, 3), padding="same", activation="relu", use_bias=True)(a1)
     a1 = MaxPooling2D(pool_size=(1, 4))(a1) # (N, 240, 1, 256)
     
-    a1 = Reshape((240, 256))(a1) # (N, 240, 256)
+    a1 = Reshape((n_time, 256))(a1) # (N, 240, 256)
     
     # Gated BGRU
     rnnout = Bidirectional(GRU(128, activation='linear', return_sequences=True))(a1)
