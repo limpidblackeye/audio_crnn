@@ -23,10 +23,6 @@ from keras.layers.merge import Multiply
 from sklearn import preprocessing
 import random
 
-import config as cfg
-from prepare_data import create_folder, load_hdf5_data, do_scale
-from data_generator import RatioDataGenerator
-from evaluation import io_task4, evaluate
 np.random.seed(1001)
 
 path_train_csv = "../../data/train.csv"
