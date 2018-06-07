@@ -122,7 +122,7 @@ def pad_trunc_seq(x, max_len):
     return x_new
 
 def prepare_data(df, config, data_dir):
-    X = np.empty(shape=(df.shape[0],config.dim[0],config.dim[1]))
+    X = np.empty(shape=(df.shape[0],config.dim[1],config.dim[0]))
     input_length = config.audio_length
     for i, fname in enumerate(df.index):
         # print(fname)
@@ -145,6 +145,7 @@ def prepare_data(df, config, data_dir):
 
             data = librosa.feature.mfcc(data, sr=config.sampling_rate, n_mfcc=config.n_mfcc)
             # data = np.expand_dims(data, axis=-1)
+            data = np.swapaxes(data,0,1)
             X[i,] = data
     return X
 
@@ -212,7 +213,7 @@ def outfunc(vects):
 # Build model
 def get_conv_rnn_model(config):
     num_classes = config.n_classes
-    (_,n_freq,n_time) = X_train.shape    ## (N, 240, 64)
+    (_, n_time, n_freq) = X_train.shape    ## (N, 240, 64)
     input_logmel = Input(shape=(n_time, n_freq), name='in_layer')   # (N, 240, 64)
     a1 = Reshape((n_time, n_freq, 1))(input_logmel) # (N, 240, 64, 1)
     
