@@ -300,7 +300,7 @@ for i, (train_split, val_split) in enumerate(skf):
 
 # #### Ensembling 2D Conv Predictions
 pred_list = []
-for i in range(10):
+for i in range(config.n_folds):
     pred_list.append(np.load("./"+PREDICTION_FOLDER+"/test_predictions_%d.npy"%i))
 prediction = np.ones_like(pred_list[0])
 for pred in pred_list:
