@@ -181,7 +181,7 @@ def outfunc(vects):
 
 # Build model
 def get_conv_rnn_model(config):
-    num_classes = config.num_classes
+    num_classes = config.n_classes
     (_, n_time, n_freq) = X_train.shape    # (N, 240, 64)
     input_logmel = Input(shape=(n_time, n_freq), name='in_layer')   # (N, 240, 64)
     a1 = Reshape((n_time, n_freq, 1))(input_logmel) # (N, 240, 64, 1)
