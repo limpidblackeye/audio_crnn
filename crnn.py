@@ -1,7 +1,5 @@
 
 import sys
-# import cPickle
-import Pickle
 import numpy as np
 import argparse
 import glob
