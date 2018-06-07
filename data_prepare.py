@@ -17,10 +17,10 @@ import argparse
 
 # config
 sample_rate = 16000.
-n_window = 1024
-n_overlap = 360      # ensure 240 frames in 10 seconds
-max_len = 240        # sequence max length is 10 s, 240 frames. 
-step_time_in_sec = float(n_window - n_overlap) / sample_rate
+n_window_ = 1024
+n_overlap_ = 360      # ensure 240 frames in 10 seconds
+max_len_ = 240        # sequence max length is 10 s, 240 frames. 
+step_time_in_sec = float(n_window_ - n_overlap_) / sample_rate
 
 lbs = ['Hi-hat', 'Saxophone', 'Trumpet', 'Glockenspiel', 'Cello', 'Knock',
  	   'Gunshot_or_gunfire', 'Clarinet', 'Computer_keyboard', 'Keys_jangling',
@@ -61,8 +61,8 @@ def extract_features(wav_dir, out_dir, recompute):
       None
     """
     fs = sample_rate
-    n_window = n_window
-    n_overlap = n_overlap
+    n_window = n_window_
+    n_overlap = n_overlap_
     
     create_folder(out_dir)
     names = [na for na in os.listdir(wav_dir) if na.endswith(".wav")]
@@ -133,7 +133,7 @@ def pack_features_to_hdf5(fe_dir, csv_path, out_path):
     Returns:
       None
     """
-    max_len = max_len
+    max_len = max_len_
     create_folder(os.path.dirname(out_path))
     
     t1 = time.time()
