@@ -66,7 +66,8 @@ class Config(object):
 
         self.audio_length = self.sampling_rate * self.audio_duration
         if self.use_mfcc:
-            self.dim = (self.n_mfcc, 1 + int(np.floor(self.audio_length/512)), 1)
+            # self.dim = (self.n_mfcc, 1 + int(np.floor(self.audio_length/512)), 1)
+            self.dim = (self.n_mfcc, max_len, 1)
         else:
             self.dim = (self.audio_length, 1)
 
