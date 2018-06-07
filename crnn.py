@@ -35,6 +35,8 @@ path_test_csv = "./sample_submission.csv"
 path_X_train = "../../data/audio_train/"
 path_X_test = '../../data/audio_test/'
 
+COMPLETE_RUN = False
+
 ###====================================================###
 ###================== define config ===================###
 ###====================================================###
@@ -114,6 +116,9 @@ def prepare_data(df, config, data_dir):
     return X
 
 config = Config()
+if not COMPLETE_RUN:
+    config = Config(sampling_rate=16000, audio_duration=1, n_folds=2, 
+                    max_epochs=1, use_mfcc=True, n_mfcc=40)
 
 print("start preparing data ...")
 X_train = prepare_data(train, config, path_X_train)
