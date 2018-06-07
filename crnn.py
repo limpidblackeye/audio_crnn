@@ -153,7 +153,7 @@ def prepare_data(df, config, data_dir):
 config = Config()
 if not COMPLETE_RUN:
     config = Config(sampling_rate=16000, audio_duration=1, n_folds=2, 
-                    max_epochs=1, use_mfcc=True, n_mfcc=40)
+                    max_epochs=1, use_mfcc=True)
 
 print("start preparing data ...")
 X_train = prepare_data(train, config, path_X_train)
