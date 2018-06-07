@@ -91,8 +91,38 @@ train["label_idx"] = train.label.apply(lambda x: label_idx[x])
 ###================== prepare data ====================###
 ###====================================================###
 
+def read_audio(path, target_fs=None):
+    (audio, fs) = soundfile.read(path)
+    if audio.ndim > 1:
+        audio = np.mean(audio, axis=1)
+    if target_fs is not None and fs != target_fs :
+        if len(audio)>0:
+            audio = librosa.resample(audio, orig_sr=fs, target_sr=target_fs)
+            fs = target_fs
+    return audio, fs
+
+def pad_trunc_seq(x, max_len):
+    """Pad or truncate a sequence data to a fixed length. 
+    
+    Args:
+      x: ndarray, input sequence data. 
+      max_len: integer, length of sequence to be padded or truncated. 
+      
+    Returns:
+      ndarray, Padded or truncated input sequence data. 
+    """
+    L = len(x)
+    shape = x.shape
+    if L < max_len:
+        pad_shape = (max_len - L,) + shape[1:]
+        pad = np.zeros(pad_shape)
+        x_new = np.concatenate((x, pad), axis=0)
+    else:
+        x_new = x[0:max_len]
+    return x_new
+
 def prepare_data(df, config, data_dir):
-    X = np.empty(shape=(df.shape[0], config.dim[0], config.dim[1], 1))
+    X = np.empty(shape=(df.shape[0],config.dim[1],config.dim[0]))
     input_length = config.audio_length
     for i, fname in enumerate(df.index):
         # print(fname)
@@ -114,7 +144,7 @@ def prepare_data(df, config, data_dir):
                 data = np.pad(data, (offset, input_length - len(data) - offset), "constant")
 
             data = librosa.feature.mfcc(data, sr=config.sampling_rate, n_mfcc=config.n_mfcc)
-            data = np.expand_dims(data, axis=-1)
+            # data = np.expand_dims(data, axis=-1)
             X[i,] = data
     return X
 
@@ -280,4 +310,46 @@ predicted_labels = [' '.join(list(x)) for x in top_3]
 test = pd.read_csv(path_test_csv)
 test['label'] = predicted_labels
 test[['fname', 'label']].to_csv("./"+PREDICTION_FOLDER+"/crnn_ensembled_submission.csv", index=False)
+
+
+
+    # fs = config.sampling_rate
+    # n_window = config.n_window
+    # n_overlap = config.n_overlap
+    
+    # # Mel filter bank
+    # melW = librosa.filters.mel(sr=fs, 
+    #                            n_fft=n_window, 
+    #                            n_mels=64, 
+    #                            fmin=0., 
+    #                            fmax=8000.)
+    # x_all = []
+
+    # for i, na in enumerate(df.index):
+    #     # Skip features already computed
+    #     if ".wav" in str(fname):
+    #         wav_path = data_dir + fname        
+    #         (audio, _) = read_audio(wav_path, fs)
+            
+    #         # Skip corrupted wavs
+    #         if audio.shape[0] == 0:
+    #             print("File %s is corrupted!" % wav_path)
+    #         else:
+    #             # Compute spectrogram
+    #             ham_win = np.hamming(n_window)
+    #             [f, t, x] = signal.spectral.spectrogram(
+    #                             x=audio, 
+    #                             window=ham_win,
+    #                             nperseg=n_window, 
+    #                             noverlap=n_overlap, 
+    #                             detrend=False, 
+    #                             return_onesided=True, 
+    #                             mode='magnitude') 
+    #             x = x.T
+    #             x = np.dot(x, melW.T)
+    #             x = np.log(x + 1e-8)
+    #             x = x.astype(np.float32)
+    #             x = pad_trunc_seq(x, max_len)
+    #             x_all.append(x)
+
 
