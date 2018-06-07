@@ -5,6 +5,7 @@ import os
 import librosa
 from scipy import signal
 import pickle
+import pandas as pd
 # import cPickle
 import scipy
 import time
@@ -22,14 +23,24 @@ n_overlap_ = 360      # ensure 240 frames in 10 seconds
 max_len_ = 240        # sequence max length is 10 s, 240 frames. 
 step_time_in_sec = float(n_window_ - n_overlap_) / sample_rate
 
-lbs = ['Hi-hat', 'Saxophone', 'Trumpet', 'Glockenspiel', 'Cello', 'Knock',
- 	   'Gunshot_or_gunfire', 'Clarinet', 'Computer_keyboard', 'Keys_jangling',
-	   'Snare_drum', 'Writing', 'Laughter', 'Tearing', 'Fart', 'Oboe', 'Flute', 'Cough',
-	   'Telephone', 'Bark', 'Chime', 'Bass_drum', 'Bus', 'Squeak', 'Scissors',
-	   'Harmonica', 'Gong', 'Microwave_oven', 'Burping_or_eructation', 'Double_bass',
-	   'Shatter', 'Fireworks', 'Tambourine', 'Cowbell', 'Electric_piano', 'Meow',
-	   'Drawer_open_or_close', 'Applause', 'Acoustic_guitar', 'Violin_or_fiddle',
-	   'Finger_snapping']
+# lbs = ['Hi-hat', 'Saxophone', 'Trumpet', 'Glockenspiel', 'Cello', 'Knock',
+#      'Gunshot_or_gunfire', 'Clarinet', 'Computer_keyboard', 'Keys_jangling',
+#      'Snare_drum', 'Writing', 'Laughter', 'Tearing', 'Fart', 'Oboe', 'Flute', 'Cough',
+#      'Telephone', 'Bark', 'Chime', 'Bass_drum', 'Bus', 'Squeak', 'Scissors',
+#      'Harmonica', 'Gong', 'Microwave_oven', 'Burping_or_eructation', 'Double_bass',
+#      'Shatter', 'Fireworks', 'Tambourine', 'Cowbell', 'Electric_piano', 'Meow',
+#      'Drawer_open_or_close', 'Applause', 'Acoustic_guitar', 'Violin_or_fiddle',
+#      'Finger_snapping']
+
+train = pd.read_csv("../../data/train.csv")
+test = pd.read_csv("./sample_submission.csv")
+
+LABELS = list(train.label.unique())
+label_idx = {label: i for i, label in enumerate(LABELS)}
+train.set_index("fname", inplace=True)
+test.set_index("fname", inplace=True)
+train["label_idx"] = train.label.apply(lambda x: label_idx[x])
+y_train = to_categorical(train.label_idx, num_classes=config.n_classes)
 
 # Read wav
 def read_audio(path, target_fs=None):
@@ -37,9 +48,9 @@ def read_audio(path, target_fs=None):
     if audio.ndim > 1:
         audio = np.mean(audio, axis=1)
     if target_fs is not None and fs != target_fs :
-    	if len(audio)>0:
-        	audio = librosa.resample(audio, orig_sr=fs, target_sr=target_fs)
-        	fs = target_fs
+        if len(audio)>0:
+            audio = librosa.resample(audio, orig_sr=fs, target_sr=target_fs)
+            fs = target_fs
     return audio, fs
 
 # Create an empty folder
@@ -114,6 +125,20 @@ def extract_features(wav_dir, out_dir, recompute):
         cnt += 1
     print("Extracting feature time: %s" % (time.time() - t1,))
 
+def label2target(label):
+    """Ids of wav to multinomial representation. 
+    
+    Args:
+      label: label of input, e.g. ['Train horn', 'Air horn', 'truck horn', 'Car alarm', 'Reversing beeps']
+    Returns:
+      1d array, multimonial representation, e.g. [0,0,1,0,0,...]
+    """
+    y = np.zeros(len(lbs))
+    for id in label:
+        index = cfg.id_to_idx[id]
+        y[index] = 1
+    return y
+    
 ### Pack features of hdf5 file
 def pack_features_to_hdf5(fe_dir, csv_path, out_path):
     """Pack extracted features to a single hdf5 file. 
@@ -145,7 +170,7 @@ def pack_features_to_hdf5(fe_dir, csv_path, out_path):
             lis = list(reader)
         cnt = 0
         for li in lis:
-        	# load x(feature pickled) and y for name in each line of csv 
+            # load x(feature pickled) and y for name in each line of csv 
             [na, bgn, fin, lbs, ids] = li
             if cnt % 100 == 0: print(cnt)
             na = os.path.splitext(na)[0]
@@ -162,7 +187,7 @@ def pack_features_to_hdf5(fe_dir, csv_path, out_path):
                 x = pad_trunc_seq(x, max_len)
                 x_all.append(x)
                 ids = ids.split(',')
-                y = ids_to_multinomial(ids)
+                y = label2target(ids)
                 y_all.append(y)
             cnt += 1
     else:   # Pack from features without ground truth label (dev. data)
