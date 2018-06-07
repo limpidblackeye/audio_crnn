@@ -29,8 +29,11 @@ from sklearn.cross_validation import StratifiedKFold
 
 np.random.seed(1001)
 
-path_train_csv = "../../data/train.csv"
-path_test_csv = "./sample_submission.csv"
+# path_train_csv = "../../data/train.csv"
+# path_test_csv = "../../data/sample_submission.csv"
+
+path_train_csv = "../../data/train_small.csv"
+path_test_csv = "../../data/sample_submission_small.csv"
 
 path_X_train = "../../data/audio_train/"
 path_X_test = '../../data/audio_test/'
@@ -274,7 +277,7 @@ prediction = prediction**(1./len(pred_list))
 # Make a submission file
 top_3 = np.array(LABELS)[np.argsort(-prediction, axis=1)[:, :3]]
 predicted_labels = [' '.join(list(x)) for x in top_3]
-test = pd.read_csv('./sample_submission.csv')
+test = pd.read_csv(path_test_csv)
 test['label'] = predicted_labels
 test[['fname', 'label']].to_csv("./"+PREDICTION_FOLDER+"/crnn_ensembled_submission.csv", index=False)
 
