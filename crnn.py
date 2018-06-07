@@ -29,16 +29,16 @@ from sklearn.cross_validation import StratifiedKFold
 
 np.random.seed(1001)
 
-# path_train_csv = "../../data/train.csv"
-# path_test_csv = "../../data/sample_submission.csv"
+path_train_csv = "../../data/train.csv"
+path_test_csv = "../../data/sample_submission.csv"
 
-path_train_csv = "../../data/train_small.csv"
-path_test_csv = "../../data/sample_submission_small.csv"
+# path_train_csv = "../../data/train_small.csv"
+# path_test_csv = "../../data/sample_submission_small.csv"
 
 path_X_train = "../../data/audio_train/"
 path_X_test = '../../data/audio_test/'
 
-COMPLETE_RUN = False
+COMPLETE_RUN = True
 
 ###====================================================###
 ###================== define config ===================###
