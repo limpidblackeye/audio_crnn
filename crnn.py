@@ -38,8 +38,8 @@ path_X_test = '../../data/audio_test/'
 class Config(object):
     def __init__(self,
                  sampling_rate=16000,n_window=1024, n_overlap = 360,
-                 max_len=240, n_classes=41, 
-                 use_mfcc=True, n_folds=10, learning_rate=0.0001, 
+                 max_len=240, n_classes=41, audio_duration =2,
+                 use_mfcc=True, n_folds=10, learning_rate=0.001, 
                  max_epochs=50, n_mfcc=64):
 
         self.sampling_rate = sampling_rate
@@ -109,6 +109,8 @@ def prepare_data(df, config, data_dir):
             data = np.expand_dims(data, axis=-1)
             X[i,] = data
     return X
+
+config = Config()
 
 print("start preparing data ...")
 X_train = prepare_data(train, config, path_X_train)
