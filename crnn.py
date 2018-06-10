@@ -221,26 +221,26 @@ def get_conv_rnn_model(config):
     a1 = block(a1)
     a1 = block(a1)
     a1 = MaxPooling2D(pool_size=(1, 2))(a1) # (N, 240, 32, 128)
-    a1 = Dropout(rate=0.3)(a1)
+    a1 = Dropout(rate=0.5)(a1)
 
     a1 = block(a1)
     a1 = block(a1)
     a1 = MaxPooling2D(pool_size=(1, 2))(a1) # (N, 240, 16, 128)
-    a1 = Dropout(rate=0.3)(a1)
+    a1 = Dropout(rate=0.5)(a1)
 
     a1 = block(a1)
     a1 = block(a1)
     a1 = MaxPooling2D(pool_size=(1, 2))(a1) # (N, 240, 8, 128)
-    a1 = Dropout(rate=0.3)(a1)
+    a1 = Dropout(rate=0.5)(a1)
 
     a1 = block(a1)
     a1 = block(a1)
     a1 = MaxPooling2D(pool_size=(1, 2))(a1) # (N, 240, 4, 128)
-    a1 = Dropout(rate=0.3)(a1)
+    a1 = Dropout(rate=0.5)(a1)
 
     a1 = Conv2D(256, (3, 3), padding="same", activation="relu", use_bias=True)(a1)
     a1 = MaxPooling2D(pool_size=(1, 4))(a1) # (N, 240, 1, 256)
-    a1 = Dropout(rate=0.3)(a1)
+    a1 = Dropout(rate=0.5)(a1)
 
     a1 = Reshape((n_time, 256))(a1) # (N, 240, 256)
     
